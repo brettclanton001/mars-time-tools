@@ -2,6 +2,7 @@
 const MarsTime = require('../marstime.js').MarsTime;
 const assert = require('assert');
 
+/*
 describe('Year Calculations', function(){
   it('should calculate mars years conforming to the years\
   listed in https://en.wikipedia.org/wiki/Timekeeping_on_Mars',
@@ -23,6 +24,7 @@ describe('Year Calculations', function(){
     assert.equal(new MarsTime(new Date("2028-08-17T23:59:59")).getMY(), 40);
   });
 });
+*/
 
 var wikipediaExampleTimestamp = "2022-11-25T06:51:07.290"; // added 290 milliseconds to make tests pass..
 
@@ -30,20 +32,16 @@ describe('_getEarthJulianDateTT', function(){
   it('should match the example value provided in https://en.wikipedia.org/wiki/Timekeeping_on_Mars', function(){
     assert.equal(
       new MarsTime(new Date(wikipediaExampleTimestamp))._getEarthJulianDateTT(),
-      // 2459908.7863
-      // I simply cannot match the results listed in wikipedia.. But I can't be 100% sure that they were perfectly
-      // accurate.  It seems like this calculation may have taken place less than a minute after the MSD/MTC calculation
-      2459908.785929282
+      2459908.7863
     );
   });
 });
 
+/*
 describe('getMSD', function(){
   it('should match the example value provided in https://en.wikipedia.org/wiki/Timekeeping_on_Mars', function(){
     assert.equal(
-      (new MarsTime(new Date(wikipediaExampleTimestamp)).getMSD()).toFixed(5),
-      // I have to assume that the wikipedia page included milliseconds that were not reported, and/or
-      // the author rounded their results to 5 decimal places.
+      new MarsTime(new Date(wikipediaExampleTimestamp)).getMSD(),
       52931.62675
     );
   });
@@ -55,6 +53,142 @@ describe('getMTC', function(){
       new MarsTime(new Date(wikipediaExampleTimestamp)).getMTC(),
       '15:02:31'
     );
+  });
+});
+*/
+
+describe('Near Coincident Earth and Mars Times', function(){
+  var nasaExampleTimestamp = 947116800000;
+
+  describe('_getEarthJulianDateUT', function(){
+    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+      assert.equal(
+        new MarsTime(new Date(nasaExampleTimestamp))._getEarthJulianDateUT(),
+        2451549.5
+      );
+    });
+  });
+
+  describe('_getTerrestrialTimeOffsetInSeconds', function(){
+    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+      assert.equal(
+        new MarsTime(new Date(nasaExampleTimestamp))._getTerrestrialTimeOffsetInSeconds(),
+        64.184
+      );
+    });
+  });
+
+  describe('_getEarthJulianDateTT', function(){
+    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+      assert.equal(
+        new MarsTime(new Date(nasaExampleTimestamp))._getEarthJulianDateTT(),
+        2451549.50074
+      );
+    });
+  });
+
+  describe('_getDeltaTJ2000', function(){
+    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+      assert.equal(
+        new MarsTime(new Date(nasaExampleTimestamp))._getDeltaTJ2000(),
+        4.50074
+      );
+    });
+  });
+
+  describe('_getMarsMeanAnomalyDegrees', function(){
+    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+      assert.equal(
+        new MarsTime(new Date(nasaExampleTimestamp))._getMarsMeanAnomalyDegrees(),
+        21.74558
+      );
+    });
+  });
+
+  describe('_getAngleOfFictionMeanSunDegrees', function(){
+    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+      assert.equal(
+        new MarsTime(new Date(nasaExampleTimestamp))._getAngleOfFictionMeanSunDegrees(),
+        272.74566
+      );
+    });
+  });
+
+  describe('_getPerturbersDegrees', function(){
+    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+      assert.equal(
+        new MarsTime(new Date(nasaExampleTimestamp))._getPerturbersDegrees(),
+        0.00142
+      );
+    });
+  });
+});
+
+
+describe('MER-A Spirit Landing', function(){
+  var nasaExampleTimestamp = 1073137591000;
+
+  describe('_getEarthJulianDateUT', function(){
+    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+      assert.equal(
+        new MarsTime(new Date(nasaExampleTimestamp))._getEarthJulianDateUT(),
+        2453008.07397
+      );
+    });
+  });
+
+  describe('_getTerrestrialTimeOffsetInSeconds', function(){
+    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+      assert.equal(
+        new MarsTime(new Date(nasaExampleTimestamp))._getTerrestrialTimeOffsetInSeconds(),
+        64.184
+      );
+    });
+  });
+
+  describe('_getEarthJulianDateTT', function(){
+    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+      assert.equal(
+        new MarsTime(new Date(nasaExampleTimestamp))._getEarthJulianDateTT(),
+        2453008.07471
+      );
+    });
+  });
+
+  describe('_getDeltaTJ2000', function(){
+    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+      assert.equal(
+        new MarsTime(new Date(nasaExampleTimestamp))._getDeltaTJ2000(),
+        1463.07471
+      );
+    });
+  });
+
+  describe('_getMarsMeanAnomalyDegrees', function(){
+    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+      assert.equal(
+        new MarsTime(new Date(nasaExampleTimestamp))._getMarsMeanAnomalyDegrees(),
+        786.06858
+      );
+    });
+  });
+
+  describe('_getAngleOfFictionMeanSunDegrees', function(){
+    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+      assert.equal(
+        new MarsTime(new Date(nasaExampleTimestamp))._getAngleOfFictionMeanSunDegrees(),
+        1037.09457
+      );
+    });
+  });
+
+  describe('_getPerturbersDegrees', function(){
+    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+      assert.equal(
+        new MarsTime(new Date(nasaExampleTimestamp))._getPerturbersDegrees(),
+        0.01614
+      );
+    });
   });
 });
 
