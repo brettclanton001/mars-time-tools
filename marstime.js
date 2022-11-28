@@ -39,6 +39,7 @@ class MarsTime {
     this.earthUnixDate = earthUnixTimeInMilliseconds / millisecondsPerDay;
     this.earthJulianDateUT = this._getEarthJulianDateUT();
     this.earthJulianDateTT = this._getEarthJulianDateTT();
+    this.deltaTJ2000 = this._getDeltaTJ2000();
   }
 
   _getTerrestrialTimeOffsetInSeconds() {
@@ -66,15 +67,15 @@ class MarsTime {
   }
 
   _getDeltaTJ2000() {
-    return Number((this._getEarthJulianDateTT() - 2451545.0).toFixed(5));
+    return Number((this.earthJulianDateTT - 2451545.0).toFixed(5));
   }
 
   _getMarsMeanAnomalyDegrees() {
-    return Number((19.3871 + (0.52402073 * this._getDeltaTJ2000())).toFixed(5));
+    return Number((19.3871 + (0.52402073 * this.deltaTJ2000)).toFixed(5));
   }
 
   _getAngleOfFictionMeanSunDegrees() {
-    return Number((270.3871 + (0.524038496 * this._getDeltaTJ2000())).toFixed(5));
+    return Number((270.3871 + (0.524038496 * this.deltaTJ2000)).toFixed(5));
   }
 
   _getPerturbersDegrees() {
@@ -83,10 +84,11 @@ class MarsTime {
     var ti = [2.2353, 2.7543, 1.1177, 15.7866, 2.1354, 2.4694, 32.8493];
     var oi = [49.409, 168.173, 191.837, 21.736, 15.704, 95.528, 49.095];
     var summedValue = 0;
+    var orbitalDegreesPerEarthDay = 0.985626; // Number((360 / 365.25).toFixed(6))
     for(let i = 0; i < 7; i++) {
-      summedValue += ai[i] * Math.cos(((0.985626 * this._getDeltaTJ2000()) / ti[i]) + oi[i]);
+      summedValue += ai[i] * Math.cos(((orbitalDegreesPerEarthDay * this.deltaTJ2000) / ti[i]) + oi[i]);
     }
-    return summedValue;
+    return Number(summedValue.toFixed(5));
   }
 
   // Get Mars Sol Date
