@@ -1,11 +1,13 @@
 {
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "test": "mocha"
   },
   "dependencies": {
     "express": "^4.18.1"
   },
   "devDependencies": {
+    "mocha": "^10.1.0",
     "nodemon": "^2.0.19"
   }
 }

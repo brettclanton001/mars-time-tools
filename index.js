@@ -2,8 +2,11 @@ const express = require('express')
 const app = express()
 const port = 3000
 
+const MarsTime = require('./marstime.js').MarsTime
+
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  var marstime = new MarsTime(Date.now())
+  res.send('Mars Time: ' + marstime.getMTC())
 })
 
 app.listen(port, () => {
