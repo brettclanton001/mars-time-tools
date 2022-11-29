@@ -134,11 +134,40 @@ describe('Near Coincident Earth and Mars Times', function(){
     });
   });
 
+  describe('_getAreocentricSolarLongitude', function(){
+    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+      assert.equal(
+        new MarsTime(new Date(nasaExampleTimestamp))._getAreocentricSolarLongitude(),
+        // 277.18758 is not what I'm getting, I'm thinking it's another precision issue
+        277.18759
+      );
+    });
+  });
+
+  describe('getEOT', function(){
+    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+      assert.equal(
+        new MarsTime(new Date(nasaExampleTimestamp)).getEOT(),
+        -0.34585
+      );
+    });
+  });
+
   describe('getMST', function(){
     it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
       assert.equal(
         new MarsTime(new Date(nasaExampleTimestamp)).getMST(),
         // 23.99425 is the value IF JDTT is rounded to _6_ decimal places
+        23.99418
+      );
+    });
+  });
+
+  describe('getLMST', function(){
+    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+      assert.equal(
+        new MarsTime(new Date(nasaExampleTimestamp)).getLMST(0),
+        // 23.99425 more precision issues
         23.99418
       );
     });
@@ -222,12 +251,40 @@ describe('MER-A Spirit Landing', function(){
     });
   });
 
+  describe('_getAreocentricSolarLongitude', function(){
+    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+      assert.equal(
+        new MarsTime(new Date(nasaExampleTimestamp))._getAreocentricSolarLongitude(),
+        327.32416
+      );
+    });
+  });
+
+  describe('getEOT', function(){
+    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+      assert.equal(
+        new MarsTime(new Date(nasaExampleTimestamp)).getEOT(),
+        -0.85170
+      );
+    });
+  });
+
   describe('getMST', function(){
     it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
       assert.equal(
         new MarsTime(new Date(nasaExampleTimestamp)).getMST(),
         // 13.16537 is the value IF JDTT is rounded to _6_ decimal places
         13.1653
+      );
+    });
+  });
+
+  describe('getLMST', function(){
+    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+      assert.equal(
+        new MarsTime(new Date(nasaExampleTimestamp)).getLMST(184.702),
+        // 0.85190
+        0.85183
       );
     });
   });

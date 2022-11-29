@@ -58,31 +58,36 @@ class MarsTime {
     return this._getTerrestrialTimeOffsetInSeconds() / secondsPerDay;
   }
 
-  _getEarthJulianDateTT() {
-    return Number((this.earthJulianDateUT + this._getTerrestrialTimeOffsetInDays()).toFixed(5));
-  }
-
   _getEarthJulianDateUT() {
+    // JDUT = 2440587.5 + (millis / 8.64×107 ms/day)
     var julianDateOffsetFromUnix = 2440587.5;
     return Number((julianDateOffsetFromUnix + this.earthUnixDate).toFixed(5));
   }
 
+  _getEarthJulianDateTT() {
+    // JDTT = JDUT + [(TT - UTC) / 86400 s·day-1]
+    return Number((this.earthJulianDateUT + this._getTerrestrialTimeOffsetInDays()).toFixed(5));
+  }
+
   _getDeltaTJ2000() {
+    // ΔtJ2000 = JDTT - 2451545.0
     return Number((this.earthJulianDateTT - 2451545.0).toFixed(5));
   }
 
   _getMarsMeanAnomalyDegrees() {
+    // M = 19.3871° + 0.52402073° ΔtJ2000
     var m = 19.3871 + (0.52402073 * this.deltaTJ2000);
     return Number((m % 360).toFixed(5));
   }
 
   _getAngleOfFictionMeanSunDegrees() {
+    // αFMS = 270.3871° + 0.524038496° ΔtJ2000
     var a = 270.3871 + (0.524038496 * this.deltaTJ2000);
     return Number((a % 360).toFixed(5));
   }
 
   _getPerturbersDegrees() {
-    // Σ(i=1,7) Ai cos [ (0.985626° ΔtJ2000 / τi) + φi]
+    // PBS = Σ(i=1,7) Ai cos [ (0.985626° ΔtJ2000 / τi) + φi]
     var ai = [0.0071, 0.0057, 0.0039, 0.0037, 0.0021, 0.0020, 0.0018];
     var ti = [2.2353, 2.7543, 1.1177, 15.7866, 2.1354, 2.4694, 32.8493];
     var oi = [49.409, 168.173, 191.837, 21.736, 15.704, 95.528, 49.095];
@@ -105,6 +110,12 @@ class MarsTime {
     s += 0.0005 * Math.sin(5 * m * piFix);
     s += this._getPerturbersDegrees();
     return Number(s.toFixed(5));
+  }
+
+  _getAreocentricSolarLongitude() {
+    // Ls = αFMS + (ν - M)
+    var l = this._getAngleOfFictionMeanSunDegrees() + this._getEquationOfCenter();
+    return Number((l % 360).toFixed(5))
   }
 
   // Mean Solar Time
@@ -135,6 +146,17 @@ class MarsTime {
     }
   }
 
+  // Get  Equation of Time
+  getEOT() {
+    // EOT = 2.861° sin 2Ls - 0.071° sin 4Ls + 0.002° sin 6Ls - (ν - M)
+    var ls = this._getAreocentricSolarLongitude();
+    var eot = 2.861 * Math.sin(2 * ls * piFix);
+    eot -= 0.071 * Math.sin(4 * ls * piFix);
+    eot += 0.002 * Math.sin(6 * ls * piFix);
+    eot -= this._getEquationOfCenter();
+    return Number((eot * (24/360)).toFixed(5));
+  }
+
   // Get Coordinated Mars Time
   getMTC() {
     // Hour
@@ -153,6 +175,22 @@ class MarsTime {
       this._formatTwoDigit(mtcSecond);
     return coordinatedMarsTime;
   }
+
+  // Get Local Mean Solar Time.
+  getLMST(planetographicLongitude) {
+    // LMST = mod24 { MST - Λ (24 h / 360°) } = mod24 { MST - Λ (1 h / 15°) }
+    var mst = this.getMST();
+    var lmst = mst - planetographicLongitude * (24 / 360);
+    return Number((lmst % 24).toFixed(5));
+  }
+
+
+  // Get Local True Solar Time
+  getLTST() {
+    // LTST = LMST + EOT (24 h / 360°) = LMST + EOT (1 h / 15°)
+  }
+
+
 }
 
 module.exports = {
