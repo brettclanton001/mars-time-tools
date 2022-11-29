@@ -31,7 +31,6 @@ const leapSeconds = {
   1435708799000: 36,  // 2015-06-30T23:59:59
   1483228799000: 37   // 2016-12-31T23:59:59
 };
-const piFix = Math.PI / 180;
 
 class MarsTime {
 
@@ -43,118 +42,28 @@ class MarsTime {
     this.deltaTJ2000 = this._getDeltaTJ2000();
   }
 
-  _getTerrestrialTimeOffsetInSeconds() {
-    var additionalTTValue = 32.184;
-    var ttTimeOffsetSeconds = 0;
-    for (const [key, value] of Object.entries(leapSeconds)) {
-      if (key <= this.earthUnixTimeInMilliseconds) {
-        ttTimeOffsetSeconds = value;
-      }
-    }
-    return ttTimeOffsetSeconds + additionalTTValue;
-  }
-
-  _getTerrestrialTimeOffsetInDays() {
-    return this._getTerrestrialTimeOffsetInSeconds() / secondsPerDay;
-  }
-
-  _getEarthJulianDateUT() {
-    // JDUT = 2440587.5 + (millis / 8.64×107 ms/day)
-    var julianDateOffsetFromUnix = 2440587.5;
-    return Number((julianDateOffsetFromUnix + this.earthUnixDate).toFixed(5));
-  }
-
-  _getEarthJulianDateTT() {
-    // JDTT = JDUT + [(TT - UTC) / 86400 s·day-1]
-    return Number((this.earthJulianDateUT + this._getTerrestrialTimeOffsetInDays()).toFixed(5));
-  }
-
-  _getDeltaTJ2000() {
-    // ΔtJ2000 = JDTT - 2451545.0
-    return Number((this.earthJulianDateTT - 2451545.0).toFixed(5));
-  }
-
-  _getMarsMeanAnomalyDegrees() {
-    // M = 19.3871° + 0.52402073° ΔtJ2000
-    var m = 19.3871 + (0.52402073 * this.deltaTJ2000);
-    return Number((m % 360).toFixed(5));
-  }
-
-  _getAngleOfFictionMeanSunDegrees() {
-    // αFMS = 270.3871° + 0.524038496° ΔtJ2000
-    var a = 270.3871 + (0.524038496 * this.deltaTJ2000);
-    return Number((a % 360).toFixed(5));
-  }
-
-  _getPerturbersDegrees() {
-    // PBS = Σ(i=1,7) Ai cos [ (0.985626° ΔtJ2000 / τi) + φi]
-    var ai = [0.0071, 0.0057, 0.0039, 0.0037, 0.0021, 0.0020, 0.0018];
-    var ti = [2.2353, 2.7543, 1.1177, 15.7866, 2.1354, 2.4694, 32.8493];
-    var oi = [49.409, 168.173, 191.837, 21.736, 15.704, 95.528, 49.095];
-    var s = 0;
-    var orbitalDegreesPerEarthDay = 0.985626; // Number((360 / 365.25).toFixed(6))
-    for(let i = 0; i < 7; i++) {
-      s += ai[i] * Math.cos((((orbitalDegreesPerEarthDay * this.deltaTJ2000) / ti[i]) + oi[i]) * piFix);
-    }
-    return Number(s.toFixed(5));
-  }
-
-  _getEquationOfCenter() {
-    // ν - M = (10.691° + 3.0° × 10-7 ΔtJ2000) sin M + 0.623° sin 2M + 0.050° sin 3M + 0.005° sin 4M + 0.0005° sin 5M + PBS
-    var m = this._getMarsMeanAnomalyDegrees();
-    var s = 0;
-    s += (10.691 + 3.0 * 0.0000001 * this.deltaTJ2000) * Math.sin(m * piFix);
-    s += 0.623 * Math.sin(2 * m * piFix);
-    s += 0.050 * Math.sin(3 * m * piFix);
-    s += 0.005 * Math.sin(4 * m * piFix);
-    s += 0.0005 * Math.sin(5 * m * piFix);
-    s += this._getPerturbersDegrees();
-    return Number(s.toFixed(5));
-  }
-
-  _getAreocentricSolarLongitude() {
-    // Ls = αFMS + (ν - M)
-    var l = this._getAngleOfFictionMeanSunDegrees() + this._getEquationOfCenter();
-    return Number((l % 360).toFixed(5))
-  }
+  // ========== Public Methods ==========
 
   // Mean Solar Time
   getMST() {
     // mod24 { 24 h × ( [(JDTT - 2451549.5) / 1.0274912517] + 44796.0 - 0.0009626 ) }
-    var mst = (24 * (((this.earthJulianDateTT - 2451549.5) / 1.0274912517) + 44796.0 - 0.0009626)) % 24;
-    return Number((mst).toFixed(5));
+    return 24 * (((this.earthJulianDateTT - 2451549.5) / 1.0274912517) + 44796.0 - 0.0009626);
+  }
+
+  getMST24() {
+    return this.getMST() % 24;
   }
 
   // Get Mars Sol Date
   getMSD() {
-    var mysteryAdjustment = 2405522.0025054;
-    return (this.earthJulianDateTT - mysteryAdjustment) / marsTimeMultiplier;
+    return this.getMST() / 24;
   }
 
+  // Get Mars Year
   getMY() {
     var solsPerYear = 668.61883;
-    var solOffsetFromMSDToYearZero = 28223.59595415963;
+    var solOffsetFromMSDToYearZero = 28223.595537367528;
     return Math.floor((this.getMSD() - solOffsetFromMSDToYearZero) / solsPerYear);
-  }
-
-  _formatTwoDigit(num) {
-    var numString = num.toString();
-    if(num < 10) {
-      return "0" + numString;
-    } else {
-      return numString;
-    }
-  }
-
-  // Get  Equation of Time
-  getEOT() {
-    // EOT = 2.861° sin 2Ls - 0.071° sin 4Ls + 0.002° sin 6Ls - (ν - M)
-    var ls = this._getAreocentricSolarLongitude();
-    var eot = 2.861 * Math.sin(2 * ls * piFix);
-    eot -= 0.071 * Math.sin(4 * ls * piFix);
-    eot += 0.002 * Math.sin(6 * ls * piFix);
-    eot -= this._getEquationOfCenter();
-    return Number((eot * (24/360)).toFixed(5));
   }
 
   // Get Coordinated Mars Time
@@ -181,17 +90,134 @@ class MarsTime {
     // LMST = mod24 { MST - Λ (24 h / 360°) } = mod24 { MST - Λ (1 h / 15°) }
     var mst = this.getMST();
     var lmst = mst - planetographicLongitude * (24 / 360);
-    return Number((lmst % 24).toFixed(5));
+    return lmst % 24;
   }
 
 
   // Get Local True Solar Time
-  getLTST() {
+  getLTST(planetographicLongitude) {
     // LTST = LMST + EOT (24 h / 360°) = LMST + EOT (1 h / 15°)
+    var lmst = this.getLMST(planetographicLongitude);
+    var eot = this._getEOT();
+    return lmst + eot;
   }
 
+  // ========== "Private" Methods ==========
 
-}
+  _getTerrestrialTimeOffsetInSeconds() {
+    var additionalTTValue = 32.184;
+    var ttTimeOffsetSeconds = 0;
+    for (const [key, value] of Object.entries(leapSeconds)) {
+      if (key <= this.earthUnixTimeInMilliseconds) {
+        ttTimeOffsetSeconds = value;
+      }
+    }
+    return ttTimeOffsetSeconds + additionalTTValue;
+  }
+
+  _getTerrestrialTimeOffsetInDays() {
+    return this._getTerrestrialTimeOffsetInSeconds() / secondsPerDay;
+  }
+
+  _getEarthJulianDateUT() {
+    // JDUT = 2440587.5 + (millis / 8.64×107 ms/day)
+    var julianDateOffsetFromUnix = 2440587.5;
+    return julianDateOffsetFromUnix + this.earthUnixDate;
+  }
+
+  _getEarthJulianDateTT() {
+    // JDTT = JDUT + [(TT - UTC) / 86400 s·day-1]
+    return this.earthJulianDateUT + this._getTerrestrialTimeOffsetInDays();
+  }
+
+  _getDeltaTJ2000() {
+    // ΔtJ2000 = JDTT - 2451545.0
+    return this.earthJulianDateTT - 2451545.0;
+  }
+
+  _getMarsMeanAnomalyDegrees() {
+    // M = 19.3871° + 0.52402073° ΔtJ2000
+    var m = 19.3871 + (0.52402073 * this.deltaTJ2000);
+    return m % 360;
+  }
+
+  _getAngleOfFictionMeanSunDegrees() {
+    // αFMS = 270.3871° + 0.524038496° ΔtJ2000
+    var a = 270.3871 + (0.524038496 * this.deltaTJ2000);
+    return a % 360;
+  }
+
+  _getPerturbersDegrees() {
+    // PBS = Σ(i=1,7) Ai cos [ (0.985626° ΔtJ2000 / τi) + φi]
+    var ai = [0.0071, 0.0057, 0.0039, 0.0037, 0.0021, 0.0020, 0.0018];
+    var ti = [2.2353, 2.7543, 1.1177, 15.7866, 2.1354, 2.4694, 32.8493];
+    var oi = [49.409, 168.173, 191.837, 21.736, 15.704, 95.528, 49.095];
+    var s = 0;
+    var orbitalDegreesPerEarthDay = 0.9856262833675564; // 360 / 365.25 -- examples only included 6 decimal places
+    for(let i = 0; i < 7; i++) {
+      s += ai[i] * this._cos(((orbitalDegreesPerEarthDay * this.deltaTJ2000) / ti[i]) + oi[i]);
+    }
+    return s;
+  }
+
+  _getEquationOfCenter() {
+    // ν - M = (10.691° + 3.0° × 10-7 ΔtJ2000) sin M + 0.623° sin 2M + 0.050° sin 3M + 0.005° sin 4M + 0.0005° sin 5M + PBS
+    var m = this._getMarsMeanAnomalyDegrees();
+    var s = 0;
+    s += (10.691 + 3.0 * 0.0000001 * this.deltaTJ2000) * this._sin(m);
+    s += 0.623 * this._sin(2 * m);
+    s += 0.050 * this._sin(3 * m);
+    s += 0.005 * this._sin(4 * m);
+    s += 0.0005 * this._sin(5 * m);
+    s += this._getPerturbersDegrees();
+    return s;
+  }
+
+  // Get  Equation of Time
+  _getEOT() {
+    // EOT = 2.861° sin 2Ls - 0.071° sin 4Ls + 0.002° sin 6Ls - (ν - M)
+    var ls = this._getAreocentricSolarLongitude();
+    var eot = 2.861 * this._sin(2 * ls);
+    eot -= 0.071 * this._sin(4 * ls);
+    eot += 0.002 * this._sin(6 * ls);
+    eot -= this._getEquationOfCenter();
+    return eot * (24/360);
+  }
+
+  _getAreocentricSolarLongitude() {
+    // Ls = αFMS + (ν - M)
+    var l = this._getAngleOfFictionMeanSunDegrees() + this._getEquationOfCenter();
+    return l % 360;
+  }
+
+  /*
+  _getSubsolarLongitude() {
+    // Λs = MST (360° / 24 h) + EOT + 180° = MST (15° / h) + EOT + 180°
+    return (this.getMST() * 15) + this._getEOT() + 180;
+  }
+  */
+
+  // ========== Helper Methods ==========
+
+  // cosine returns radians in JS, but the scientific equations expect degrees
+  _cos(value) {
+    return Math.cos(value * (Math.PI / 180));
+  }
+
+  // sine returns radians in JS, but the scientific equations expect degrees
+  _sin(value) {
+    return Math.sin(value * (Math.PI / 180));
+  }
+
+  _formatTwoDigit(num) {
+    var numString = num.toString();
+    if(num < 10) {
+      return "0" + numString;
+    } else {
+      return numString;
+    }
+  }
+ }
 
 module.exports = {
   MarsTime: MarsTime
