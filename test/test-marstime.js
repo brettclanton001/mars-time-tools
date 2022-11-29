@@ -2,6 +2,8 @@
 const MarsTime = require('../marstime.js').MarsTime;
 const assert = require('assert');
 
+console.log(Math.sin(1 * Math.PI / 180));
+
 /*
 describe('Year Calculations', function(){
   it('should calculate mars years conforming to the years\
@@ -122,8 +124,26 @@ describe('Near Coincident Earth and Mars Times', function(){
       );
     });
   });
-});
 
+  describe('_getEquationOfCenter', function(){
+    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+      assert.equal(
+        new MarsTime(new Date(nasaExampleTimestamp))._getEquationOfCenter(),
+        4.44193
+      );
+    });
+  });
+
+  describe('getMST', function(){
+    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+      assert.equal(
+        new MarsTime(new Date(nasaExampleTimestamp)).getMST(),
+        // 23.99425 is the value IF JDTT is rounded to _6_ decimal places
+        23.99418
+      );
+    });
+  });
+});
 
 describe('MER-A Spirit Landing', function(){
   var nasaExampleTimestamp = 1073137591000;
@@ -168,7 +188,8 @@ describe('MER-A Spirit Landing', function(){
     it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
       assert.equal(
         new MarsTime(new Date(nasaExampleTimestamp))._getMarsMeanAnomalyDegrees(),
-        786.06858
+        // 786.06858 before mod 360
+        66.06858
       );
     });
   });
@@ -177,7 +198,8 @@ describe('MER-A Spirit Landing', function(){
     it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
       assert.equal(
         new MarsTime(new Date(nasaExampleTimestamp))._getAngleOfFictionMeanSunDegrees(),
-        1037.09457
+        // 1037.09457 before mod 360
+        317.09457
       );
     });
   });
@@ -187,6 +209,25 @@ describe('MER-A Spirit Landing', function(){
       assert.equal(
         new MarsTime(new Date(nasaExampleTimestamp))._getPerturbersDegrees(),
         0.01614
+      );
+    });
+  });
+
+  describe('_getEquationOfCenter', function(){
+    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+      assert.equal(
+        new MarsTime(new Date(nasaExampleTimestamp))._getEquationOfCenter(),
+        10.22959
+      );
+    });
+  });
+
+  describe('getMST', function(){
+    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+      assert.equal(
+        new MarsTime(new Date(nasaExampleTimestamp)).getMST(),
+        // 13.16537 is the value IF JDTT is rounded to _6_ decimal places
+        13.1653
       );
     });
   });

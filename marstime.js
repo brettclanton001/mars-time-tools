@@ -31,6 +31,7 @@ const leapSeconds = {
   1435708799000: 36,  // 2015-06-30T23:59:59
   1483228799000: 37   // 2016-12-31T23:59:59
 };
+const piFix = Math.PI / 180;
 
 class MarsTime {
 
@@ -71,11 +72,13 @@ class MarsTime {
   }
 
   _getMarsMeanAnomalyDegrees() {
-    return Number((19.3871 + (0.52402073 * this.deltaTJ2000)).toFixed(5));
+    var m = 19.3871 + (0.52402073 * this.deltaTJ2000);
+    return Number((m % 360).toFixed(5));
   }
 
   _getAngleOfFictionMeanSunDegrees() {
-    return Number((270.3871 + (0.524038496 * this.deltaTJ2000)).toFixed(5));
+    var a = 270.3871 + (0.524038496 * this.deltaTJ2000);
+    return Number((a % 360).toFixed(5));
   }
 
   _getPerturbersDegrees() {
@@ -83,12 +86,32 @@ class MarsTime {
     var ai = [0.0071, 0.0057, 0.0039, 0.0037, 0.0021, 0.0020, 0.0018];
     var ti = [2.2353, 2.7543, 1.1177, 15.7866, 2.1354, 2.4694, 32.8493];
     var oi = [49.409, 168.173, 191.837, 21.736, 15.704, 95.528, 49.095];
-    var summedValue = 0;
+    var s = 0;
     var orbitalDegreesPerEarthDay = 0.985626; // Number((360 / 365.25).toFixed(6))
     for(let i = 0; i < 7; i++) {
-      summedValue += ai[i] * Math.cos(((orbitalDegreesPerEarthDay * this.deltaTJ2000) / ti[i]) + oi[i]);
+      s += ai[i] * Math.cos((((orbitalDegreesPerEarthDay * this.deltaTJ2000) / ti[i]) + oi[i]) * piFix);
     }
-    return Number(summedValue.toFixed(5));
+    return Number(s.toFixed(5));
+  }
+
+  _getEquationOfCenter() {
+    // ν - M = (10.691° + 3.0° × 10-7 ΔtJ2000) sin M + 0.623° sin 2M + 0.050° sin 3M + 0.005° sin 4M + 0.0005° sin 5M + PBS
+    var m = this._getMarsMeanAnomalyDegrees();
+    var s = 0;
+    s += (10.691 + 3.0 * 0.0000001 * this.deltaTJ2000) * Math.sin(m * piFix);
+    s += 0.623 * Math.sin(2 * m * piFix);
+    s += 0.050 * Math.sin(3 * m * piFix);
+    s += 0.005 * Math.sin(4 * m * piFix);
+    s += 0.0005 * Math.sin(5 * m * piFix);
+    s += this._getPerturbersDegrees();
+    return Number(s.toFixed(5));
+  }
+
+  // Mean Solar Time
+  getMST() {
+    // mod24 { 24 h × ( [(JDTT - 2451549.5) / 1.0274912517] + 44796.0 - 0.0009626 ) }
+    var mst = (24 * (((this.earthJulianDateTT - 2451549.5) / 1.0274912517) + 44796.0 - 0.0009626)) % 24;
+    return Number((mst).toFixed(5));
   }
 
   // Get Mars Sol Date
