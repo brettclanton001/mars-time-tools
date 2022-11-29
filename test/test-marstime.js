@@ -370,13 +370,54 @@ describe('getMYTDPrecise', function() {
 });
 
 describe('getMYTD', function() {
-  var marstime = new MarsTime(new Date("1991-01-25T12:00:00"));
-  // getMYTDPrecise() would be 19.951817964348386
+  describe('just before midnight', function(){
+    var marstime = new MarsTime(new Date("1991-01-25T12:00:00"));
+    // getMYTDPrecise() would be 19.951817964348386
+    // people don't consider the first day to be day 0, so you round up.
+  
+    it('should round down the day count', function(){
+      assert.equal(
+        marstime.getMYTD(),
+        20
+      );
+    });
+  });
 
-  it('should round down the day count', function(){
-    assert.equal(
-      marstime.getMYTD(),
-      19
-    );
+  describe('just after midnight', function(){
+    var marstime = new MarsTime(new Date("1991-01-25T13:11:17.372"));
+    // getMYTDPrecise() would be 20.000000000377987
+  
+    it('should round down the day count', function(){
+      assert.equal(
+        marstime.getMYTD(),
+        21
+      );
+    });
+  });
+});
+
+describe('getMSUNY', function() {
+  describe('new years day', function(){
+    var marstime = new MarsTime(new Date("1991-01-04T23:59:59"));
+    // just after after the new year
+    // which has MYTD equaling 0.00029863015500625667
+  
+    it('should present accurate day count until the new year', function(){
+      assert.equal(
+        marstime.getMSUNY(),
+        668
+      );
+    });
+  });
+
+  describe('19 days after new years day', function(){
+    var marstime = new MarsTime(new Date("1991-01-24T23:59:59"));
+  
+    it('should present accurate day count until the new year', function(){
+      assert.equal(
+        marstime.getMSUNY(),
+        649
+      );
+    });
   });
 });

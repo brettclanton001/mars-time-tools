@@ -75,7 +75,15 @@ class MarsTime {
   }
 
   getMYTD() {
-    return Math.floor(this.getMYTDPrecise());
+    // the first day is considered day 1, not day 0
+    // not using Math.ceil because 1.0000 should still
+    // be the start of day 2
+    return Math.floor(this.getMYTDPrecise()) + 1;
+  }
+
+  // Mars Sols Until New Years
+  getMSUNY() {
+    return Math.ceil(solsPerYear) - this.getMYTD();
   }
 
   // Get Coordinated Mars Time
