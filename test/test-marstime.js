@@ -27,7 +27,7 @@ describe('Year Calculations', function(){
 
 describe('should match the wikipedia example: https://en.wikipedia.org/wiki/Timekeeping_on_Mars', function(){
   var marstime = new MarsTime(new Date("2022-11-25T06:51:07.100"));
-  // adding the 100 milliseconds made tests passgit statu
+  // adding the 100 milliseconds made tests pass
 
   describe('_getEarthJulianDateTT', function(){
     it('should match the example value provided in wikipedia', function(){
