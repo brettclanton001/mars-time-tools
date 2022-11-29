@@ -6,7 +6,7 @@ const MarsTime = require('./marstime.js').MarsTime
 
 app.get('/', (req, res) => {
   var marstime = new MarsTime(Date.now())
-  res.send('Mars Time: ' + marstime.getMTC())
+  res.send('Mars Time: ' + marstime.getMTC() + ' -- ' + marstime.getMYTD() + ' days into year: ' + marstime.getMY())
 })
 
 app.listen(port, () => {

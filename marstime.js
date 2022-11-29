@@ -31,6 +31,7 @@ const leapSeconds = {
   1435708799000: 36,  // 2015-06-30T23:59:59
   1483228799000: 37   // 2016-12-31T23:59:59
 };
+const solsPerYear = 668.61883;
 
 class MarsTime {
 
@@ -60,10 +61,21 @@ class MarsTime {
   }
 
   // Get Mars Year
-  getMY() {
-    var solsPerYear = 668.61883;
+  getMYPrecise() {
     var solOffsetFromMSDToYearZero = 28223.595537367528;
-    return Math.floor((this.getMSD() - solOffsetFromMSDToYearZero) / solsPerYear);
+    return (this.getMSD() - solOffsetFromMSDToYearZero) / solsPerYear;
+  }
+
+  getMY() {
+    return Math.floor(this.getMYPrecise());
+  }
+
+  getMYTDPrecise() {
+    return (this.getMYPrecise() % 1) * solsPerYear;
+  }
+
+  getMYTD() {
+    return Math.floor(this.getMYTDPrecise());
   }
 
   // Get Coordinated Mars Time

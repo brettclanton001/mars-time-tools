@@ -1,6 +1,10 @@
 const MarsTime = require('../marstime.js').MarsTime;
 const assert = require('assert');
 
+
+// ========== Wikipedia Sourced Tests ==========
+// https://en.wikipedia.org/wiki/Timekeeping_on_Mars
+
 describe('Year Calculations', function(){
   it('should calculate mars years conforming to the years\
   listed in https://en.wikipedia.org/wiki/Timekeeping_on_Mars',
@@ -22,7 +26,6 @@ describe('Year Calculations', function(){
     assert.equal(new MarsTime(new Date("2028-08-17T23:59:59")).getMY(), 40);
   });
 });
-
 
 describe('should match the wikipedia example: https://en.wikipedia.org/wiki/Timekeeping_on_Mars', function(){
   var marstime = new MarsTime(new Date("2022-11-25T06:51:07.100"));
@@ -55,13 +58,14 @@ describe('should match the wikipedia example: https://en.wikipedia.org/wiki/Time
   });
 });
 
-
+// ========== NASA Sourced Tests ==========
+// https://www.giss.nasa.gov/tools/mars24/help/algorithm.html
 
 describe('Near Coincident Earth and Mars Times', function(){
   var marstime = new MarsTime(new Date(947116800000));
 
   describe('_getEarthJulianDateUT', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime._getEarthJulianDateUT()).toFixed(5)),
         2451549.5
@@ -70,7 +74,7 @@ describe('Near Coincident Earth and Mars Times', function(){
   });
 
   describe('_getTerrestrialTimeOffsetInSeconds', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime._getTerrestrialTimeOffsetInSeconds()).toFixed(5)),
         64.184
@@ -79,7 +83,7 @@ describe('Near Coincident Earth and Mars Times', function(){
   });
 
   describe('_getEarthJulianDateTT', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime._getEarthJulianDateTT()).toFixed(5)),
         2451549.50074
@@ -88,7 +92,7 @@ describe('Near Coincident Earth and Mars Times', function(){
   });
 
   describe('_getDeltaTJ2000', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime._getDeltaTJ2000()).toFixed(5)),
         4.50074
@@ -97,7 +101,7 @@ describe('Near Coincident Earth and Mars Times', function(){
   });
 
   describe('_getMarsMeanAnomalyDegrees', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime._getMarsMeanAnomalyDegrees()).toFixed(5)),
         21.74558
@@ -106,7 +110,7 @@ describe('Near Coincident Earth and Mars Times', function(){
   });
 
   describe('_getAngleOfFictionMeanSunDegrees', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime._getAngleOfFictionMeanSunDegrees()).toFixed(5)),
         272.74566
@@ -115,7 +119,7 @@ describe('Near Coincident Earth and Mars Times', function(){
   });
 
   describe('_getPerturbersDegrees', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime._getPerturbersDegrees()).toFixed(5)),
         0.00142
@@ -124,7 +128,7 @@ describe('Near Coincident Earth and Mars Times', function(){
   });
 
   describe('_getEquationOfCenter', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime._getEquationOfCenter()).toFixed(5)),
         4.44193
@@ -133,7 +137,7 @@ describe('Near Coincident Earth and Mars Times', function(){
   });
 
   describe('_getAreocentricSolarLongitude', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime._getAreocentricSolarLongitude()).toFixed(5)),
         // 277.18758 -- I kept getting 277.18758943716205 which rounds up to ***.****9
@@ -144,7 +148,7 @@ describe('Near Coincident Earth and Mars Times', function(){
   });
 
   describe('_getEOT', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime._getEOT()).toFixed(5)),
         -0.34585
@@ -153,7 +157,7 @@ describe('Near Coincident Earth and Mars Times', function(){
   });
 
   describe('getMST', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime.getMST()).toFixed(5)),
         1075103.99425
@@ -162,7 +166,7 @@ describe('Near Coincident Earth and Mars Times', function(){
   });
 
   describe('getMST24', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime.getMST24()).toFixed(5)),
         23.99425
@@ -171,7 +175,7 @@ describe('Near Coincident Earth and Mars Times', function(){
   });
 
   describe('getLMST', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime.getLMST(0)).toFixed(5)),
         23.99425
@@ -180,7 +184,7 @@ describe('Near Coincident Earth and Mars Times', function(){
   });
 
   describe('getLTST', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime.getLTST(0)).toFixed(5)),
         23.64840
@@ -188,10 +192,9 @@ describe('Near Coincident Earth and Mars Times', function(){
     });
   });
 
-
   /*
   describe('_getSubsolarLongitude', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime._getSubsolarLongitude()).toFixed(5)),
         174.72600
@@ -205,7 +208,7 @@ describe('MER-A Spirit Landing', function(){
   var marstime = new MarsTime(new Date(1073137591000));
 
   describe('_getEarthJulianDateUT', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime._getEarthJulianDateUT()).toFixed(5)),
         2453008.07397
@@ -214,7 +217,7 @@ describe('MER-A Spirit Landing', function(){
   });
 
   describe('_getTerrestrialTimeOffsetInSeconds', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime._getTerrestrialTimeOffsetInSeconds()).toFixed(5)),
         64.184
@@ -223,7 +226,7 @@ describe('MER-A Spirit Landing', function(){
   });
 
   describe('_getEarthJulianDateTT', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime._getEarthJulianDateTT()).toFixed(5)),
         2453008.07471
@@ -232,7 +235,7 @@ describe('MER-A Spirit Landing', function(){
   });
 
   describe('_getDeltaTJ2000', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime._getDeltaTJ2000()).toFixed(5)),
         1463.07471
@@ -241,7 +244,7 @@ describe('MER-A Spirit Landing', function(){
   });
 
   describe('_getMarsMeanAnomalyDegrees', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime._getMarsMeanAnomalyDegrees()).toFixed(5)),
         // 786.06858 before mod 360
@@ -251,7 +254,7 @@ describe('MER-A Spirit Landing', function(){
   });
 
   describe('_getAngleOfFictionMeanSunDegrees', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime._getAngleOfFictionMeanSunDegrees()).toFixed(5)),
         // 1037.09457 before mod 360
@@ -261,7 +264,7 @@ describe('MER-A Spirit Landing', function(){
   });
 
   describe('_getPerturbersDegrees', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime._getPerturbersDegrees()).toFixed(5)),
         0.01614
@@ -270,7 +273,7 @@ describe('MER-A Spirit Landing', function(){
   });
 
   describe('_getEquationOfCenter', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime._getEquationOfCenter()).toFixed(5)),
         10.22959
@@ -279,7 +282,7 @@ describe('MER-A Spirit Landing', function(){
   });
 
   describe('_getAreocentricSolarLongitude', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime._getAreocentricSolarLongitude()).toFixed(5)),
         327.32416
@@ -288,7 +291,7 @@ describe('MER-A Spirit Landing', function(){
   });
 
   describe('_getEOT', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime._getEOT()).toFixed(5)),
         -0.85170
@@ -297,7 +300,7 @@ describe('MER-A Spirit Landing', function(){
   });
 
   describe('getMST', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime.getMST()).toFixed(5)),
         1109173.16537
@@ -306,7 +309,7 @@ describe('MER-A Spirit Landing', function(){
   });
 
   describe('getMST24', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime.getMST24()).toFixed(5)),
         13.16537
@@ -315,7 +318,7 @@ describe('MER-A Spirit Landing', function(){
   });
 
   describe('getLMST', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime.getLMST(184.702)).toFixed(5)),
         0.85190
@@ -324,12 +327,12 @@ describe('MER-A Spirit Landing', function(){
   });
 
   describe('getLTST', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime.getLTST(184.702)).toFixed(5)),
         // this equasion is simple given the agreed values of LMST and EOT.
         // 0.85190 + -0.85170 = 0.00020 ... there's just no way to make 0.00005 appear out of thin air..
-        // 0.00025
+        // 0.00025 (nasa reported value)
         0.00020
       );
     });
@@ -337,7 +340,7 @@ describe('MER-A Spirit Landing', function(){
 
   /*
   describe('_getSubsolarLongitude', function(){
-    it('should match the example value provided in https://www.giss.nasa.gov/tools/mars24/help/algorithm.html', function(){
+    it('should match the example value provided by nasa', function(){
       assert.equal(
         Number((marstime._getSubsolarLongitude()).toFixed(5)),
         4.70500
@@ -347,3 +350,33 @@ describe('MER-A Spirit Landing', function(){
   */
 });
 
+// ========== My Tests ==========
+
+describe('getMYTDPrecise', function() {
+  var marstime = new MarsTime(new Date("1991-01-24T23:59:59"));
+  // 20 earth days after the new year around 1991-01-04T23:59:59
+  // which has MYTD equaling 0.00029863015500625667
+  // earth days are 97.32442961% as long as mars days
+  // mars days are 102.74912517% as long as earth days
+  // 20 earth days should be 19.464885922 mars days long
+  // 19.464885922 + 0.00029863015500625667 = 19.4651845522 (rounded)
+
+  it('should present accurate day count since the new year', function(){
+    assert.equal(
+      marstime.getMYTDPrecise(),
+      19.46518455196961
+    );
+  });
+});
+
+describe('getMYTD', function() {
+  var marstime = new MarsTime(new Date("1991-01-25T12:00:00"));
+  // getMYTDPrecise() would be 19.951817964348386
+
+  it('should round down the day count', function(){
+    assert.equal(
+      marstime.getMYTD(),
+      19
+    );
+  });
+});
