@@ -6,9 +6,7 @@ const assert = require('assert');
 // https://en.wikipedia.org/wiki/Timekeeping_on_Mars
 
 describe('Year Calculations', function(){
-  it('should calculate mars years conforming to the years\
-  listed in https://en.wikipedia.org/wiki/Timekeeping_on_Mars',
-  function() {
+  it('should calculate mars years conforming to the years listed', function() {
     assert.equal(new MarsTime(new Date("1953-05-24T00:00:01")).getMY(), 0);
     assert.equal(new MarsTime(new Date("1955-04-10T23:59:59")).getMY(), 0);
     assert.equal(new MarsTime(new Date("1955-04-11T23:59:59")).getMY(), 1);
@@ -29,6 +27,7 @@ describe('Year Calculations', function(){
 
 describe('should match the wikipedia example: https://en.wikipedia.org/wiki/Timekeeping_on_Mars', function(){
   var marstime = new MarsTime(new Date("2022-11-25T06:51:07.100"));
+  // adding the 100 milliseconds made tests passgit statu
 
   describe('_getEarthJulianDateTT', function(){
     it('should match the example value provided in wikipedia', function(){
