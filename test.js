@@ -1,4 +1,4 @@
-const MarsTime = require('../marstime.js').MarsTime;
+const MarsTime = require('./index.js').MarsTime;
 const assert = require('assert');
 
 

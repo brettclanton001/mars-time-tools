@@ -6,9 +6,7 @@
   "waitFor": "onCreateCommand",
   "updateContentCommand": "npm install",
   "postCreateCommand": "",
-  "postAttachCommand": {
-    "server": "npm start"
-  },
+  "postAttachCommand": {},
   "customizations": {
     "codespaces": {
       "openFiles": [
@@ -16,11 +14,6 @@
       ]
     }
   },
-  "portsAttributes": {
-    "3000": {
-      "label": "Application",
-      "onAutoForward": "openPreview"
-    }
-  },
-  "forwardPorts": [3000]
+  "portsAttributes": {},
+  "forwardPorts": []
 }

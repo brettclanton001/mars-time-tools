@@ -1,13 +1,33 @@
 {
+  "name": "mars-time",
+  "version": "1.0.0",
+  "description": "find Mars-localized time data given an Earth timestamp",
+  "main": "index.js",
+  "license": "MIT",
+  "author": {
+    "name": "Brett Clanton",
+    "email": "brettclanton@pm.me",
+    "url": "https://brettclanton001.github.io/"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "mocha": "^10.1.0"
+  },
   "scripts": {
-    "start": "nodemon index.js",
     "test": "mocha"
   },
-  "dependencies": {
-    "express": "^4.18.1"
+  "keywords": [
+    "mars",
+    "martian",
+    "time",
+    "clock"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com:brettclanton001/mars-time.git"
   },
-  "devDependencies": {
-    "mocha": "^10.1.0",
-    "nodemon": "^2.0.19"
+  "homepage": "https://github.com/brettclanton001/mars-time",
+  "bugs": {
+    "url": "https://github.com/brettclanton001/mars-time/issues"
   }
 }
