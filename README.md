@@ -1,6 +1,6 @@
-# Mars Time
+[![Node.js CI](https://github.com/brettclanton001/mars-time/actions/workflows/node.js.yml/badge.svg)](https://github.com/brettclanton001/mars-time/actions/workflows/node.js.yml)
 
-[![Actions Status](https://github.com/brettclanton001/mars-time/workflows/Build%20and%20Test/badge.svg)](https://github.com/brettclanton001/mars-time/actions)
+# Mars Time
 
 This project will solve problems for future Martians and the Earthlings that interact with them.
 
