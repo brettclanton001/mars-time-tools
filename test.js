@@ -1,6 +1,11 @@
 const MarsTime = require('./index.js').MarsTime;
 const assert = require('assert');
 
+describe('deliberately break tests', function(){
+  it('should fail the tests to see if the badge works', function(){
+    assert.equal(1, 0);
+  });
+});
 
 // ========== Wikipedia Sourced Tests ==========
 // https://en.wikipedia.org/wiki/Timekeeping_on_Mars
