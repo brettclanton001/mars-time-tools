@@ -26,17 +26,26 @@ const port = 3000
 
 app.get('/', (req, res) => {
   var marstime = new MarsTime(Date.now())
-  res.send('Mars Time: ' + marstime.getMTC())
+  res.send(
+    'Mars Time: ' + marstime.getMTC() + ' -- ' +
+    marstime.getMYTD() + ' sols into year: ' + marstime.getMY() + ' -- ' +
+    marstime.getMSUNY() + ' sols until newyears!'
+  )
 })
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
 ```
+
+..That will output something like this:
 ```
-Mars Time: 06:26:37
+Mars Time: 06:29:36 -- 644 sols into year: 36 -- 25 sols until newyears!
 ```
 
+---
+
+## Contribute to this project
 
 To test this package:
 ```
