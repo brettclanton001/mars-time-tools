@@ -1,5 +1,5 @@
 {
-  "name": "mars-time",
+  "name": "mars-time-tools",
   "version": "1.0.0",
   "description": "find Mars-localized time data given an Earth timestamp",
   "main": "index.js",
@@ -24,10 +24,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com:brettclanton001/mars-time.git"
+    "url": "git://github.com:brettclanton001/mars-time-tools.git"
   },
-  "homepage": "https://github.com/brettclanton001/mars-time",
+  "homepage": "https://github.com/brettclanton001/mars-time-tools",
   "bugs": {
-    "url": "https://github.com/brettclanton001/mars-time/issues"
+    "url": "https://github.com/brettclanton001/mars-time-tools/issues"
   }
 }

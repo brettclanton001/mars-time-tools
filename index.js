@@ -210,13 +210,6 @@ class MarsTime {
     return l % 360;
   }
 
-  /*
-  _getSubsolarLongitude() {
-    // Λs = MST (360° / 24 h) + EOT + 180° = MST (15° / h) + EOT + 180°
-    return (this.getMST() * 15) + this._getEOT() + 180;
-  }
-  */
-
   // ========== Helper Methods ==========
 
   // cosine returns radians in JS, but the scientific equations expect degrees

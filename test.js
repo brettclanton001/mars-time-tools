@@ -190,17 +190,6 @@ describe('Near Coincident Earth and Mars Times', function(){
       );
     });
   });
-
-  /*
-  describe('_getSubsolarLongitude', function(){
-    it('should match the example value provided by nasa', function(){
-      assert.equal(
-        Number((marstime._getSubsolarLongitude()).toFixed(5)),
-        174.72600
-      );
-    });
-  });
-  */
 });
 
 describe('MER-A Spirit Landing', function(){
@@ -336,17 +325,6 @@ describe('MER-A Spirit Landing', function(){
       );
     });
   });
-
-  /*
-  describe('_getSubsolarLongitude', function(){
-    it('should match the example value provided by nasa', function(){
-      assert.equal(
-        Number((marstime._getSubsolarLongitude()).toFixed(5)),
-        4.70500
-      );
-    });
-  });
-  */
 });
 
 // ========== My Tests ==========
