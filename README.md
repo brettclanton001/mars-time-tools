@@ -17,6 +17,27 @@ To install this package:
 npm i --save mars-time-tools
 ```
 
+Example Usage:
+```
+const express = require('express')
+const MarsTime = require('mars-time-tools').MarsTime
+const app = express()
+const port = 3000
+
+app.get('/', (req, res) => {
+  var marstime = new MarsTime(Date.now())
+  res.send('Mars Time: ' + marstime.getMTC())
+})
+
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+})
+```
+```
+Mars Time: 06:26:37
+```
+
+
 To test this package:
 ```
 npm test
