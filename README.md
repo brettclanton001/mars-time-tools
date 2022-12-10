@@ -20,6 +20,7 @@ npm i --save mars-time-tools
 Example Usage:
 ```
 const MarsTime = require('mars-time-tools').MarsTime
+var marstime = new MarsTime(Date.now())
 console.log(
   'Mars Time: ' + marstime.getMTC() + ' -- ' +
   marstime.getMYTD() + ' sols into year: ' + marstime.getMY() + ' -- ' +
