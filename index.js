@@ -36,73 +36,89 @@ const solsPerYear = 668.61883;
 class MarsTime {
 
   constructor(earthUnixTimeInMilliseconds) {
+    this.cache = {};
     this.earthUnixTimeInMilliseconds = earthUnixTimeInMilliseconds;
     this.earthUnixDate = earthUnixTimeInMilliseconds / millisecondsPerDay;
-    this.earthJulianDateUT = this._getEarthJulianDateUT();
-    this.earthJulianDateTT = this._getEarthJulianDateTT();
-    this.deltaTJ2000 = this._getDeltaTJ2000();
   }
 
   // ========== Public Methods ==========
 
   // Mean Solar Time
   getMST() {
-    // mod24 { 24 h × ( [(JDTT - 2451549.5) / 1.0274912517] + 44796.0 - 0.0009626 ) }
-    return 24 * (((this.earthJulianDateTT - 2451549.5) / 1.0274912517) + 44796.0 - 0.0009626);
+    return this._memoizedValue('getMST', function(){
+      // mod24 { 24 h × ( [(JDTT - 2451549.5) / 1.0274912517] + 44796.0 - 0.0009626 ) }
+      return 24 * (((this._getEarthJulianDateTT() - 2451549.5) / 1.0274912517) + 44796.0 - 0.0009626);
+    }.bind(this));
   }
 
   getMST24() {
-    return this.getMST() % 24;
+    return this._memoizedValue('getMST24', function(){
+      return this.getMST() % 24;
+    }.bind(this));
   }
 
   // Get Mars Sol Date
   getMSD() {
-    return this.getMST() / 24;
+    return this._memoizedValue('getMSD', function(){
+      return this.getMST() / 24;
+    }.bind(this));
   }
 
   // Get Mars Year
   getMYPrecise() {
-    var solOffsetFromMSDToYearZero = 28223.595537367528;
-    return (this.getMSD() - solOffsetFromMSDToYearZero) / solsPerYear;
+    return this._memoizedValue('getMYPrecise', function(){
+      var solOffsetFromMSDToYearZero = 28223.595537367528;
+      return (this.getMSD() - solOffsetFromMSDToYearZero) / solsPerYear;
+    }.bind(this));
   }
 
   getMY() {
-    return Math.floor(this.getMYPrecise());
+    return this._memoizedValue('getMY', function(){
+      return Math.floor(this.getMYPrecise());
+    }.bind(this));
   }
 
   getMYTDPrecise() {
-    return (this.getMYPrecise() % 1) * solsPerYear;
+    return this._memoizedValue('getMYTDPrecise', function(){
+      return (this.getMYPrecise() % 1) * solsPerYear;
+    }.bind(this));
   }
 
   getMYTD() {
-    // the first day is considered day 1, not day 0
-    // not using Math.ceil because 1.0000 should still
-    // be the start of day 2
-    return Math.floor(this.getMYTDPrecise()) + 1;
+    return this._memoizedValue('getMYTD', function(){
+      // the first day is considered day 1, not day 0
+      // not using Math.ceil because 1.0000 should still
+      // be the start of day 2
+      return Math.floor(this.getMYTDPrecise()) + 1;
+    }.bind(this));
   }
 
   // Mars Sols Until New Years
   getMSUNY() {
-    return Math.ceil(solsPerYear) - this.getMYTD();
+    return this._memoizedValue('getMSUNY', function(){
+      return Math.ceil(solsPerYear) - this.getMYTD();
+    }.bind(this));
   }
 
   // Get Coordinated Mars Time
   getMTC() {
-    // Hour
-    var coordinatedMarsTimeInHours = (this.getMSD() % 1) * 24;
-    var mtcHour = Math.floor(coordinatedMarsTimeInHours);
-    // Minute
-    var coordinatedMarsTimeInMinutes = (coordinatedMarsTimeInHours % 1) * 60;
-    var mtcMinute = Math.floor(coordinatedMarsTimeInMinutes);
-    // Second
-    var coordinatedMarsTimeInSeconds = (coordinatedMarsTimeInMinutes % 1) * 60;
-    var mtcSecond = Math.floor(coordinatedMarsTimeInSeconds);
-    // MTC formatting
-    var coordinatedMarsTime = 
-      this._formatTwoDigit(mtcHour) + ":" + 
-      this._formatTwoDigit(mtcMinute) + ":" +
-      this._formatTwoDigit(mtcSecond);
-    return coordinatedMarsTime;
+    return this._memoizedValue('getMTC', function(){
+      // Hour
+      var coordinatedMarsTimeInHours = (this.getMSD() % 1) * 24;
+      var mtcHour = Math.floor(coordinatedMarsTimeInHours);
+      // Minute
+      var coordinatedMarsTimeInMinutes = (coordinatedMarsTimeInHours % 1) * 60;
+      var mtcMinute = Math.floor(coordinatedMarsTimeInMinutes);
+      // Second
+      var coordinatedMarsTimeInSeconds = (coordinatedMarsTimeInMinutes % 1) * 60;
+      var mtcSecond = Math.floor(coordinatedMarsTimeInSeconds);
+      // MTC formatting
+      var coordinatedMarsTime = 
+        this._formatTwoDigit(mtcHour) + ":" + 
+        this._formatTwoDigit(mtcMinute) + ":" +
+        this._formatTwoDigit(mtcSecond);
+      return coordinatedMarsTime;
+    }.bind(this));
   }
 
   // Get Local Mean Solar Time.
@@ -125,89 +141,111 @@ class MarsTime {
   // ========== "Private" Methods ==========
 
   _getTerrestrialTimeOffsetInSeconds() {
-    var additionalTTValue = 32.184;
-    var ttTimeOffsetSeconds = 0;
-    for (const [key, value] of Object.entries(leapSeconds)) {
-      if (key <= this.earthUnixTimeInMilliseconds) {
-        ttTimeOffsetSeconds = value;
+    return this._memoizedValue('_getTerrestrialTimeOffsetInSeconds', function(){
+      var additionalTTValue = 32.184;
+      var ttTimeOffsetSeconds = 0;
+      for (const [key, value] of Object.entries(leapSeconds)) {
+        if (key <= this.earthUnixTimeInMilliseconds) {
+          ttTimeOffsetSeconds = value;
+        }
       }
-    }
-    return ttTimeOffsetSeconds + additionalTTValue;
+      return ttTimeOffsetSeconds + additionalTTValue;
+    }.bind(this));
   }
 
   _getTerrestrialTimeOffsetInDays() {
-    return this._getTerrestrialTimeOffsetInSeconds() / secondsPerDay;
+    return this._memoizedValue('_getTerrestrialTimeOffsetInDays', function(){
+      return this._getTerrestrialTimeOffsetInSeconds() / secondsPerDay;
+    }.bind(this));
   }
 
   _getEarthJulianDateUT() {
-    // JDUT = 2440587.5 + (millis / 8.64×107 ms/day)
-    var julianDateOffsetFromUnix = 2440587.5;
-    return julianDateOffsetFromUnix + this.earthUnixDate;
+    return this._memoizedValue('_getEarthJulianDateUT', function(){
+      // JDUT = 2440587.5 + (millis / 8.64×107 ms/day)
+      var julianDateOffsetFromUnix = 2440587.5;
+      return julianDateOffsetFromUnix + this.earthUnixDate;
+    }.bind(this));
   }
 
   _getEarthJulianDateTT() {
-    // JDTT = JDUT + [(TT - UTC) / 86400 s·day-1]
-    return this.earthJulianDateUT + this._getTerrestrialTimeOffsetInDays();
+    return this._memoizedValue('_getEarthJulianDateTT', function(){
+      // JDTT = JDUT + [(TT - UTC) / 86400 s·day-1]
+      return this._getEarthJulianDateUT() + this._getTerrestrialTimeOffsetInDays();
+    }.bind(this));
   }
 
   _getDeltaTJ2000() {
-    // ΔtJ2000 = JDTT - 2451545.0
-    return this.earthJulianDateTT - 2451545.0;
+    return this._memoizedValue('_getDeltaTJ2000', function(){
+      // ΔtJ2000 = JDTT - 2451545.0
+      return this._getEarthJulianDateTT() - 2451545.0;
+    }.bind(this));
   }
 
   _getMarsMeanAnomalyDegrees() {
-    // M = 19.3871° + 0.52402073° ΔtJ2000
-    var m = 19.3871 + (0.52402073 * this.deltaTJ2000);
-    return m % 360;
+    return this._memoizedValue('_getMarsMeanAnomalyDegrees', function(){
+      // M = 19.3871° + 0.52402073° ΔtJ2000
+      var m = 19.3871 + (0.52402073 * this._getDeltaTJ2000());
+      return m % 360;
+    }.bind(this));
   }
 
   _getAngleOfFictionMeanSunDegrees() {
-    // αFMS = 270.3871° + 0.524038496° ΔtJ2000
-    var a = 270.3871 + (0.524038496 * this.deltaTJ2000);
-    return a % 360;
+    return this._memoizedValue('_getAngleOfFictionMeanSunDegrees', function(){
+      // αFMS = 270.3871° + 0.524038496° ΔtJ2000
+      var a = 270.3871 + (0.524038496 * this._getDeltaTJ2000());
+      return a % 360;
+    }.bind(this));
   }
 
   _getPerturbersDegrees() {
-    // PBS = Σ(i=1,7) Ai cos [ (0.985626° ΔtJ2000 / τi) + φi]
-    var ai = [0.0071, 0.0057, 0.0039, 0.0037, 0.0021, 0.0020, 0.0018];
-    var ti = [2.2353, 2.7543, 1.1177, 15.7866, 2.1354, 2.4694, 32.8493];
-    var oi = [49.409, 168.173, 191.837, 21.736, 15.704, 95.528, 49.095];
-    var s = 0;
-    var orbitalDegreesPerEarthDay = 0.9856262833675564; // 360 / 365.25 -- examples only included 6 decimal places
-    for(let i = 0; i < 7; i++) {
-      s += ai[i] * this._cos(((orbitalDegreesPerEarthDay * this.deltaTJ2000) / ti[i]) + oi[i]);
-    }
-    return s;
+    return this._memoizedValue('_getPerturbersDegrees', function(){
+      // PBS = Σ(i=1,7) Ai cos [ (0.985626° ΔtJ2000 / τi) + φi]
+      var ai = [0.0071, 0.0057, 0.0039, 0.0037, 0.0021, 0.0020, 0.0018];
+      var ti = [2.2353, 2.7543, 1.1177, 15.7866, 2.1354, 2.4694, 32.8493];
+      var oi = [49.409, 168.173, 191.837, 21.736, 15.704, 95.528, 49.095];
+      var s = 0;
+      var orbitalDegreesPerEarthDay = 0.9856262833675564; // 360 / 365.25 -- examples only included 6 decimal places
+      for(let i = 0; i < 7; i++) {
+        s += ai[i] * this._cos(((orbitalDegreesPerEarthDay * this._getDeltaTJ2000()) / ti[i]) + oi[i]);
+      }
+      return s;
+    }.bind(this));
   }
 
   _getEquationOfCenter() {
-    // ν - M = (10.691° + 3.0° × 10-7 ΔtJ2000) sin M + 0.623° sin 2M + 0.050° sin 3M + 0.005° sin 4M + 0.0005° sin 5M + PBS
-    var m = this._getMarsMeanAnomalyDegrees();
-    var s = 0;
-    s += (10.691 + 3.0 * 0.0000001 * this.deltaTJ2000) * this._sin(m);
-    s += 0.623 * this._sin(2 * m);
-    s += 0.050 * this._sin(3 * m);
-    s += 0.005 * this._sin(4 * m);
-    s += 0.0005 * this._sin(5 * m);
-    s += this._getPerturbersDegrees();
-    return s;
+    return this._memoizedValue('_getEquationOfCenter', function(){
+      // ν - M = (10.691° + 3.0° × 10-7 ΔtJ2000) sin M + 0.623° sin 2M + 0.050° sin 3M + 0.005° sin 4M + 0.0005° sin 5M + PBS
+      var m = this._getMarsMeanAnomalyDegrees();
+      var s = 0;
+      s += (10.691 + 3.0 * 0.0000001 * this._getDeltaTJ2000()) * this._sin(m);
+      s += 0.623 * this._sin(2 * m);
+      s += 0.050 * this._sin(3 * m);
+      s += 0.005 * this._sin(4 * m);
+      s += 0.0005 * this._sin(5 * m);
+      s += this._getPerturbersDegrees();
+      return s;
+    }.bind(this));
   }
 
   // Get  Equation of Time
   _getEOT() {
-    // EOT = 2.861° sin 2Ls - 0.071° sin 4Ls + 0.002° sin 6Ls - (ν - M)
-    var ls = this._getAreocentricSolarLongitude();
-    var eot = 2.861 * this._sin(2 * ls);
-    eot -= 0.071 * this._sin(4 * ls);
-    eot += 0.002 * this._sin(6 * ls);
-    eot -= this._getEquationOfCenter();
-    return eot * (24/360);
+    return this._memoizedValue('_getEOT', function(){
+      // EOT = 2.861° sin 2Ls - 0.071° sin 4Ls + 0.002° sin 6Ls - (ν - M)
+      var ls = this._getAreocentricSolarLongitude();
+      var eot = 2.861 * this._sin(2 * ls);
+      eot -= 0.071 * this._sin(4 * ls);
+      eot += 0.002 * this._sin(6 * ls);
+      eot -= this._getEquationOfCenter();
+      return eot * (24/360);
+    }.bind(this));
   }
 
   _getAreocentricSolarLongitude() {
-    // Ls = αFMS + (ν - M)
-    var l = this._getAngleOfFictionMeanSunDegrees() + this._getEquationOfCenter();
-    return l % 360;
+    return this._memoizedValue('_getAreocentricSolarLongitude', function(){
+      // Ls = αFMS + (ν - M)
+      var l = this._getAngleOfFictionMeanSunDegrees() + this._getEquationOfCenter();
+      return l % 360;
+    }.bind(this));
   }
 
   // ========== Helper Methods ==========
@@ -229,6 +267,13 @@ class MarsTime {
     } else {
       return numString;
     }
+  }
+
+  _memoizedValue(cacheKey, f) {
+    if(!(cacheKey in this.cache)) {
+      this.cache[cacheKey] = f();
+    }
+    return this.cache[cacheKey];
   }
  }
 
