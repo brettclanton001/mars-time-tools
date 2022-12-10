@@ -19,23 +19,12 @@ npm i --save mars-time-tools
 
 Example Usage:
 ```
-const express = require('express')
 const MarsTime = require('mars-time-tools').MarsTime
-const app = express()
-const port = 3000
-
-app.get('/', (req, res) => {
-  var marstime = new MarsTime(Date.now())
-  res.send(
-    'Mars Time: ' + marstime.getMTC() + ' -- ' +
-    marstime.getMYTD() + ' sols into year: ' + marstime.getMY() + ' -- ' +
-    marstime.getMSUNY() + ' sols until newyears!'
-  )
-})
-
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+console.log(
+  'Mars Time: ' + marstime.getMTC() + ' -- ' +
+  marstime.getMYTD() + ' sols into year: ' + marstime.getMY() + ' -- ' +
+  marstime.getMSUNY() + ' sols until newyears!'
+)
 ```
 
 ..That will output something like this:
