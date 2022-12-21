@@ -352,7 +352,7 @@ describe('getMYTD', function() {
     // getMYTDPrecise() would be 19.951817964348386
     // people don't consider the first day to be day 0, so you round up.
   
-    it('should round down the day count', function(){
+    it('should round up the day count', function(){
       assert.equal(
         marstime.getMYTD(),
         20
@@ -364,7 +364,7 @@ describe('getMYTD', function() {
     var marstime = new MarsTime(new Date("1991-01-25T13:11:17.372"));
     // getMYTDPrecise() would be 20.000000000377987
   
-    it('should round down the day count', function(){
+    it('should round up the day count', function(){
       assert.equal(
         marstime.getMYTD(),
         21
